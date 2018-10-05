@@ -12,10 +12,10 @@ const spotify = new Spotify(keys.spotify)
 // const movie = 'movie-this'
 // const doWhatItSays = 'do-what-it-says'
 
-// const bitAPIquery = 'https://rest.bandsintown.com/artists/' + artist + '/events?app_id=codingbootcamp'
+const bitAPIquery = 'https://rest.bandsintown.com/artists/' + k.join(' ', k.slice(3, process.argv.length, process.argv)) + '/events?app_id=codingbootcamp'
 
 if (process.argv[2] === 'spotify-this-song') {
-  spotify.search({ type: 'track', query: k.join('', k.slice(3, process.argv)), limit: 50 }, function (err, data) {
+  spotify.search({ type: 'track', query: k.join(' ', k.slice(3, process.argv.length, process.argv)), limit: 50 }, function (err, data) {
     if (err) {
       return console.log('Error occurred: ' + err)
     }
@@ -39,3 +39,17 @@ if (process.argv[2] === 'spotify-this-song') {
     console.log('Artist: ' + artist + '\n' + 'Song Title: ' + song + '\n' + 'Preview Link: ' + preview + '\n' + 'Album: ' + album)
   })
 }
+
+request(bitAPIquery, function (err, response, body) {
+  if (err) console.log(err)
+  else {
+    const results = JSON.parse(body)[0]
+    console.log(results.venue)
+    const venue = results.venue.name
+    console.log(venue)
+    const location = results.venue.city + ', ' + results.venue.city
+    console.log(location)
+    const date = results.datetime
+    console.log(date)
+  }
+})
