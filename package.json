@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/hamidyou/liri-node-app#readme",
   "dependencies": {
+    "date-fns": "^1.29.0",
     "dotenv": "^6.0.0",
     "kyanite": "^0.9.1",
     "moment": "^2.22.2",
