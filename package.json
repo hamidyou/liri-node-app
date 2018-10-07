@@ -20,6 +20,7 @@
   "dependencies": {
     "date-fns": "^1.29.0",
     "dotenv": "^6.0.0",
+    "inquirer": "^6.2.0",
     "kyanite": "^0.9.1",
     "moment": "^2.22.2",
     "node-spotify-api": "^1.0.7",

@@ -7,6 +7,7 @@ const request = require('request')
 const k = require('kyanite/dist/kyanite')
 const date = require('date-fns/format')
 const fs = require('fs')
+const inquirer = require('inquirer')
 
 // Bring in spotify api verification codes
 const spotify = new Spotify(keys.spotify)
@@ -26,7 +27,7 @@ const append = x => {
 // spotify-this-song
 const runSpotify = x => {
   // build the spotify query
-  const spotifyQuery = x => x[3] ? k.join(' ', k.slice(3, x.length, x)) : 'The Sign Ace of Base'
+  const spotifyQuery = x => x || 'The Sign Ace of Base'
   // make the api call
   spotify.search({ type: 'track', query: spotifyQuery(x), limit: 50 }, function (err, data) {
     if (err) {
@@ -58,7 +59,7 @@ const runSpotify = x => {
 // concert-this
 const findConcert = x => {
   // build query
-  const bitAPIquery = x => 'https://rest.bandsintown.com/artists/' + k.join(' ', k.slice(3, x.length, x)) + '/events?app_id=codingbootcamp'
+  const bitAPIquery = x => 'https://rest.bandsintown.com/artists/' + x + '/events?app_id=codingbootcamp'
   // make API call
   request(bitAPIquery(x), function (err, response, body) {
     if (err) console.log(err)
@@ -79,7 +80,7 @@ const findConcert = x => {
 // find-movie
 const findMovie = x => {
   // build query
-  const omdbQuery = x => x[3] ? 'http://www.omdbapi.com/?apikey=9969d46b&t=' + k.join(' ', k.slice(3, x.length, x)) : 'http://www.omdbapi.com/?apikey=9969d46b&i=tt0485947'
+  const omdbQuery = x => x ? 'http://www.omdbapi.com/?apikey=9969d46b&t=' + x : 'http://www.omdbapi.com/?apikey=9969d46b&i=tt0485947'
   // make API call
   request(omdbQuery(x), function (err, response, body) {
     if (err) console.log(err)
@@ -120,11 +121,26 @@ const doIt = () => {
 }
 
 // main function
-const run = x => {
-  if (x[2] === 'spotify-this-song') runSpotify(x)
-  if (x[2] === 'concert-this') findConcert(x)
-  if (x[2] === 'movie-this') findMovie(x)
-  if (x[2] === 'do-what-it-says') doIt(x)
+const run = (x, y) => {
+  if (x === 'spotify-this-song') runSpotify(y)
+  if (x === 'concert-this') findConcert(y)
+  if (x === 'movie-this') findMovie(y)
+  if (x === 'do-what-it-says') doIt()
 }
 
-run(process.argv)
+inquirer
+  .prompt([
+    {
+      type: 'list',
+      name: 'command',
+      message: 'Choose a command from below.',
+      choices: ['spotify-this-song', 'concert-this', 'movie-this', 'do-what-it-says']
+    },
+    {
+      type: 'input',
+      name: 'title',
+      message: 'What is the title?'
+    }
+  ]).then(answers => {
+    run(answers.command, answers.title)
+  })
