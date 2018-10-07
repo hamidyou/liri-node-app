@@ -1,3 +1,4 @@
+// Bring in npm packages
 require('dotenv').config()
 
 const keys = require('./keys')
@@ -7,11 +8,25 @@ const k = require('kyanite/dist/kyanite')
 const date = require('date-fns/format')
 const fs = require('fs')
 
+// Bring in spotify api verification codes
 const spotify = new Spotify(keys.spotify)
-const spotifyQuery = x => x[3] ? k.join(' ', k.slice(3, x.length, x)) : 'The Sign Ace of Base'
 
-if (process.argv[2] === 'spotify-this-song') {
-  spotify.search({ type: 'track', query: spotifyQuery(process.argv), limit: 50 }, function (err, data) {
+// function to append to log.txt
+const append = x => {
+  fs.appendFile('log.txt', x, 'utf-8', function (err, data) {
+    if (err) {
+      console.log(err)
+    } else {
+      console.log('Appended successfully to log.txt')
+      console.log(x)
+    }
+  })
+}
+
+// spotify-this-song
+const runSpotify = x => {
+  const spotifyQuery = x => x[3] ? k.join(' ', k.slice(3, x.length, x)) : 'The Sign Ace of Base'
+  spotify.search({ type: 'track', query: spotifyQuery(x), limit: 50 }, function (err, data) {
     if (err) {
       return console.log('Error occurred: ' + err)
     }
@@ -31,31 +46,34 @@ if (process.argv[2] === 'spotify-this-song') {
     const preview = trackInfo[4]
     const album = trackInfo[1]
 
-    console.log('Artist: ' + artist + '\n' + 'Song Title: ' + song + '\n' + 'Preview Link: ' + preview + '\n' + 'Album: ' + album)
+    const output = '\nArtist: ' + artist + '\n' + 'Song Title: ' + song + '\n' + 'Preview Link: ' + preview + '\n' + 'Album: ' + album
+
+    append(output)
   })
 }
 
-const bitAPIquery = 'https://rest.bandsintown.com/artists/' + k.join(' ', k.slice(3, process.argv.length, process.argv)) + '/events?app_id=codingbootcamp'
-
-if (process.argv[2] === 'concert-this') {
-  request(bitAPIquery, function (err, response, body) {
+// concert-this
+const findConcert = x => {
+  const bitAPIquery = x => 'https://rest.bandsintown.com/artists/' + k.join(' ', k.slice(3, x.length, x)) + '/events?app_id=codingbootcamp'
+  request(bitAPIquery(x), function (err, response, body) {
     if (err) console.log(err)
     else {
       const results = JSON.parse(body)[0]
       const venue = results.venue.name
-      console.log('Venue: ' + venue)
       const location = results.venue.city + ', ' + results.venue.city
-      console.log('Location: ' + location)
       const date2 = 'Date: ' + date(new Date(results.datetime), 'MMMM D, YYYY HH:mm')
-      console.log(date2)
+
+      const output = '\nVenue: ' + venue + '\nLocation: ' + location + '\nDate: ' + date2
+
+      append(output)
     }
   })
 }
 
-const omdbQuery = x => x[3] ? 'http://www.omdbapi.com/?apikey=9969d46b&t=' + k.join(' ', k.slice(3, x.length, x)) : 'http://www.omdbapi.com/?apikey=9969d46b&i=tt0485947'
-
-if (process.argv[2] === 'movie-this') {
-  request(omdbQuery(process.argv), function (err, response, body) {
+// find-movie
+const findMovie = x => {
+  const omdbQuery = x => x[3] ? 'http://www.omdbapi.com/?apikey=9969d46b&t=' + k.join(' ', k.slice(3, x.length, x)) : 'http://www.omdbapi.com/?apikey=9969d46b&i=tt0485947'
+  request(omdbQuery(x), function (err, response, body) {
     if (err) console.log(err)
     else {
       const results = JSON.parse(body)
@@ -75,18 +93,34 @@ if (process.argv[2] === 'movie-this') {
       console.log('Plot: ' + plot)
       const actors = results.Actors
       console.log('Actors: ' + actors)
+
+      const output = '\nTitle: ' + title + '\nReleased: ' + year + '\nIMDB Rating: ' + imdbRating + '\n' + rtRating.Source + ': ' + rtRating.Value + '\nCountry: ' + country + '\nLanguage(s): ' + language + '\nPlot: ' + plot + '\nActors: ' + actors
+
+      append(output)
     }
   })
 }
 
-if (process.argv[2] === 'do-what-it-says') {
+// do-what-it-says
+const doIt = () => {
   let info = []
   fs.readFile('random.txt', 'utf-8', function (err, data) {
     if (err) {
       console.log(err)
     } else {
       info = k.split(',', data)
-
+      let infoArray = k.insert(0, '', info)
+      infoArray = k.insert(0, '', infoArray)
+      run(infoArray)
     }
   })
 }
+
+const run = x => {
+  if (x[2] === 'spotify-this-song') runSpotify(x)
+  if (x[2] === 'concert-this') findConcert(x)
+  if (x[2] === 'movie-this') findMovie(x)
+  if (x[2] === 'do-what-it-says') doIt(x)
+}
+
+run(process.argv)
