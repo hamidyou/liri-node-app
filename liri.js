@@ -50,7 +50,7 @@ const runSpotify = x => {
     const preview = trackInfo[4]
     const album = trackInfo[1]
 
-    const output = '\nArtist: ' + artist + '\n' + 'Song Title: ' + song + '\n' + 'Preview Link: ' + preview + '\n' + 'Album: ' + album
+    const output = '\n\nArtist: ' + artist + '\n' + 'Song Title: ' + song + '\n' + 'Preview Link: ' + preview + '\n' + 'Album: ' + album
 
     append(output)
   })
@@ -70,7 +70,7 @@ const findConcert = x => {
       const location = results.venue.city + ', ' + results.venue.city
       const date2 = 'Date: ' + date(new Date(results.datetime), 'MMMM D, YYYY HH:mm')
 
-      const output = '\nVenue: ' + venue + '\nLocation: ' + location + '\nDate: ' + date2
+      const output = '\n\nArtist: ' + x + '\nVenue: ' + venue + '\nLocation: ' + location + '\nDate: ' + date2
 
       append(output)
     }
@@ -96,7 +96,7 @@ const findMovie = x => {
       const plot = results.Plot
       const actors = results.Actors
 
-      const output = '\nTitle: ' + title + '\nReleased: ' + year + '\nIMDB Rating: ' + imdbRating + '\n' + rtRating.Source + ': ' + rtRating.Value + '\nCountry: ' + country + '\nLanguage(s): ' + language + '\nPlot: ' + plot + '\nActors: ' + actors
+      const output = '\n\nTitle: ' + title + '\nReleased: ' + year + '\nIMDB Rating: ' + imdbRating + '\n' + rtRating.Source + ': ' + rtRating.Value + '\nCountry: ' + country + '\nLanguage(s): ' + language + '\nPlot: ' + plot + '\nActors: ' + actors
 
       append(output)
     }
@@ -113,9 +113,7 @@ const doIt = () => {
     } else {
       // parse information to pass to run()
       info = k.split(',', data)
-      let infoArray = k.insert(0, '', info)
-      infoArray = k.insert(0, '', infoArray)
-      run(infoArray)
+      run(info[0], info[1])
     }
   })
 }
