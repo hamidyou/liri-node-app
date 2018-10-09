@@ -14,6 +14,15 @@ SPOTIFY_SECRET=[YOUR_SPOTIFY_SECRET]
 ```
 - Once downloaded and the `.env` is created, open the terminal, navigate to the folder of your project and run.
   - node liri.js
+- Select one of the 4 options:
+  - `spotify-this-song`
+    - returns artist, song title, preview link, and album name
+  - `concert-this`
+    - returns artist & concert venue, location, and date
+  - `movie-this`
+    - returns movie title, year of release, IMDB and Rotten Tomatoes ratings, countries of release, languages, plot, and actors
+  - `do-what-it-says`
+    - runs the command and title in the random.txt file
 
 ## Get Help
 Please submit an issue if you need help. Be as descriptive as possible and include screenshots if applicable.
